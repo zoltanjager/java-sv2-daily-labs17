@@ -14,13 +14,21 @@ public class MoviesRepository {
         this.dataSource = dataSource;
     }
 
-    public void saveMovie(String title, LocalDate releaseDate) {
+    public Long saveMovie(String title, LocalDate releaseDate) {
 
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement statement = conn.prepareStatement("insert into movies(title, release_date) values (?,?)")) {
-            statement.setString(1, title);
-            statement.setDate(2, Date.valueOf(releaseDate));
-            statement.executeUpdate();
+             PreparedStatement stmt = conn.prepareStatement("insert into movies(title, release_date) values (?,?)", Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, title);
+            stmt.setDate(2, Date.valueOf(releaseDate));
+            stmt.executeUpdate();
+
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getLong(1);
+                }
+                throw new IllegalStateException("Insert failed to movies!");
+            }
+
         } catch (SQLException sqle) {
             throw new IllegalStateException("Cannot connect'", sqle);
         }
@@ -29,8 +37,8 @@ public class MoviesRepository {
     public List<Movie> findAllMovies() {
         List<Movie> movies = new ArrayList<>();
 
-        try (Connection connection = dataSource.getConnection();
-             Statement stmt = connection.createStatement();
+        try (Connection conn = dataSource.getConnection();
+             Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery("SELECT * FROM movies")
         ) {
             while (rs.next()) {
@@ -42,7 +50,6 @@ public class MoviesRepository {
         } catch (SQLException sqle) {
             throw new IllegalStateException("Cannot query!", sqle);
         }
-
         return movies;
     }
 

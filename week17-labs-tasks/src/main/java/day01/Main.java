@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -22,6 +23,7 @@ public class Main {
         }
 
         Flyway flyway = Flyway.configure().dataSource(dataSource).load();
+        flyway.clean();
         flyway.migrate();
 
         ActorsRepository actorsRepository = new ActorsRepository(dataSource);
@@ -30,11 +32,17 @@ public class Main {
         //System.out.println(actorsRepository.findActorsWithPrefix("Ja"));
 
         MoviesRepository moviesRepository = new MoviesRepository(dataSource);
-        moviesRepository.saveMovie("Titanic", LocalDate.of(1997, 12,11));
+        //moviesRepository.saveMovie("Titanic", LocalDate.of(1997, 12,11));
 
-                moviesRepository.findAllMovies().stream()
-                        .map(Movie::getTitle)
-                        .peek(System.out::println).collect(Collectors.toList());
+        //        moviesRepository.findAllMovies().stream()
+        //                .map(Movie::getTitle)
+        //               .peek(System.out::println).collect(Collectors.toList());
+
+        ActorsMoviesRepository actorsMoviesRepository = new ActorsMoviesRepository(dataSource);
+        ActorsMoviesService service = new ActorsMoviesService(actorsRepository,moviesRepository,actorsMoviesRepository);
+
+        service.insertMovieWithActors("Titanic", LocalDate.of(1997, 11,13), List.of("Leonardo Dicaprio", "Kate Winslet"));
+        service.insertMovieWithActors("Great Gatsby", LocalDate.of(2012, 12,11), List.of("Leonardo Dicaprio", "Toby"));
 
     }
 }
