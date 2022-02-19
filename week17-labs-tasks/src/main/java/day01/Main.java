@@ -23,7 +23,7 @@ public class Main {
         }
 
         Flyway flyway = Flyway.configure().dataSource(dataSource).load();
-        flyway.clean();
+        //flyway.clean();
         flyway.migrate();
 
         ActorsRepository actorsRepository = new ActorsRepository(dataSource);
@@ -39,10 +39,16 @@ public class Main {
         //               .peek(System.out::println).collect(Collectors.toList());
 
         ActorsMoviesRepository actorsMoviesRepository = new ActorsMoviesRepository(dataSource);
-        ActorsMoviesService service = new ActorsMoviesService(actorsRepository,moviesRepository,actorsMoviesRepository);
+        RatingsRepository ratingsRepository = new RatingsRepository(dataSource);
 
-        service.insertMovieWithActors("Titanic", LocalDate.of(1997, 11,13), List.of("Leonardo Dicaprio", "Kate Winslet"));
-        service.insertMovieWithActors("Great Gatsby", LocalDate.of(2012, 12,11), List.of("Leonardo Dicaprio", "Toby"));
+        ActorsMoviesService actorsMoviesService = new ActorsMoviesService(actorsRepository, moviesRepository, actorsMoviesRepository);
+        MoviesRatingsService moviesRatingsService = new MoviesRatingsService(moviesRepository, ratingsRepository);
+
+//        actorsMoviesService.insertMovieWithActors("Titanic", LocalDate.of(1997, 11,13), List.of("Leonardo Dicaprio", "Kate Winslet"));
+//        actorsMoviesService.insertMovieWithActors("Great Gatsby", LocalDate.of(2012, 12,11), List.of("Leonardo Dicaprio", "Toby"));
+
+        //moviesRatingsService.addRatings("Titanic", 5,3,2);
+        moviesRatingsService.addRatings("Great Gatsby", 1, 3, 2, 5);
 
     }
 }
