@@ -69,4 +69,31 @@ public class MoviesRepository {
         }
     }
 
+    public Double calculateAvgRating(Long movieId) {
+        try(Connection conn = dataSource.getConnection();
+        PreparedStatement stmt = conn.prepareStatement("select round(avg(rating),2) as avg_rating from ratings where movie_id=?")){
+            stmt.setLong(1, movieId);
+            try(ResultSet rs = stmt.executeQuery()){
+                if(rs.next()) {
+                    Double avgRating = rs.getDouble("avg_rating");
+                    return avgRating;
+                }
+                return 0.0;
+            }
+        } catch (SQLException sqle) {
+            throw new IllegalStateException("Cannot connect to ratings!", sqle);
+        }
+    }
+
+    public void updateAvgRating(Long movieId, Double avgRating) {
+        try (Connection conn = dataSource.getConnection();
+        PreparedStatement stmt = conn.prepareStatement("update movies set avg_rating=? where id=?")){
+            stmt.setDouble(1, avgRating);
+            stmt.setLong(2, movieId);
+            stmt.executeUpdate();
+        } catch (SQLException sqle) {
+            throw new IllegalStateException("Cannot connect to movies!", sqle);
+        }
+    }
+
 }

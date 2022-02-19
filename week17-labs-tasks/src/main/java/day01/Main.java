@@ -23,7 +23,7 @@ public class Main {
         }
 
         Flyway flyway = Flyway.configure().dataSource(dataSource).load();
-        //flyway.clean();
+        flyway.clean();
         flyway.migrate();
 
         ActorsRepository actorsRepository = new ActorsRepository(dataSource);
@@ -44,11 +44,14 @@ public class Main {
         ActorsMoviesService actorsMoviesService = new ActorsMoviesService(actorsRepository, moviesRepository, actorsMoviesRepository);
         MoviesRatingsService moviesRatingsService = new MoviesRatingsService(moviesRepository, ratingsRepository);
 
-//        actorsMoviesService.insertMovieWithActors("Titanic", LocalDate.of(1997, 11,13), List.of("Leonardo Dicaprio", "Kate Winslet"));
-//        actorsMoviesService.insertMovieWithActors("Great Gatsby", LocalDate.of(2012, 12,11), List.of("Leonardo Dicaprio", "Toby"));
+        actorsMoviesService.insertMovieWithActors("Titanic", LocalDate.of(1997, 11,13), List.of("Leonardo Dicaprio", "Kate Winslet"));
+        actorsMoviesService.insertMovieWithActors("Great Gatsby", LocalDate.of(2012, 12,11), List.of("Leonardo Dicaprio", "Toby"));
+        actorsMoviesService.insertMovieWithActors("The Lord of the Rings", LocalDate.of(2000, 10,11), List.of("Orlando Bloom", "Liv Tyler"));
 
-        //moviesRatingsService.addRatings("Titanic", 5,3,2);
+        moviesRatingsService.addRatings("Titanic", 5,3,2);
         moviesRatingsService.addRatings("Great Gatsby", 1, 3, 2, 5);
+        moviesRatingsService.addRatings("Great Gatsby", 1, 2, 2, 2);
+        moviesRatingsService.addRatings("The Lord of the Rings", 4, 4, 5, 5);
 
     }
 }

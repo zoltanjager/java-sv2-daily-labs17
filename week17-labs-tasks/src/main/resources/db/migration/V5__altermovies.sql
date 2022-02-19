@@ -1,0 +1,1 @@
+alter table movies add avg_rating float;
